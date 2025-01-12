@@ -13,11 +13,13 @@ LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nl
 
 
 
-builder.Services.AddControllers();
 
-builder.Services.AddEndpointsApiExplorer();
+
+
+
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureLoggerService();
+
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.AddControllers();
@@ -45,47 +47,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 app.UseCors("CorsPolicy");
 app.UseAuthorization();
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"Logic before executing the next delegate in the Use method");
-    await next.Invoke();
-    Console.WriteLine("Logic after executing the next delegate in the Use method");
 
-
-});
-app.Map("/usingmapbranch", builder =>
-{
-    builder.Use(async (context, next) =>
-    {
-        Console.WriteLine("Logic before executing the next delegate in the Map method");
-        await next.Invoke();
-        Console.WriteLine("Logic after executing the next delegate in the Map method");
-    });
-    builder.Run(async context =>
-    {
-        Console.WriteLine("writing the response to the client in the Map method");
-        await context.Response.WriteAsync("Hello from the map branch.");
-    });
-});
-
-app.MapWhen(context => context.Request.Query.ContainsKey("testquerystring"), builder
-    =>
-{
-    builder.Run(async context =>
-    {
-
-        
-            await context.Response.WriteAsync("Hello from the MapWhen branch.");
-
-    }
-    );
-  
-});
-app.Run(async context =>
-{
-    Console.WriteLine("writing the response to the client in the run method");
-    await context.Response.WriteAsync("Hello from the middleware component.");
-});
 app.MapControllers();
-
 app.Run();
