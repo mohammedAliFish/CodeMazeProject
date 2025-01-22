@@ -1,7 +1,6 @@
 ﻿
 using AutoMapper;
 using Contracts.Interface;
-
 using Repository;
 using Service.Contracts;
 using Shared.DataTransferObjects;

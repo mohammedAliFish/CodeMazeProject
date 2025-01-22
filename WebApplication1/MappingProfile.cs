@@ -11,6 +11,9 @@ namespace CodeMazeProject1
             CreateMap<Company, CompanyDto>()
                 .ForCtorParam("FullAddress",
                     opt => opt.MapFrom(x => string.Join(" ", x.CompanyAddress, x.Country)));
+
+            
+
         }
     }
 }
