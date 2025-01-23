@@ -15,5 +15,9 @@ namespace Repository
             FindAll(trackChanges)
                 .OrderBy(c => c.CompanyName)
                 .ToList();
+
+        public Company GetCompany(Guid companyGuid, bool trackChanges) =>
+            FindByCondition(c => c.CompanyGuid.Equals(companyGuid), trackChanges)
+                .SingleOrDefault();
     }
 }

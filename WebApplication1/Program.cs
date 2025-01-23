@@ -4,6 +4,8 @@ using NLog;
 using Service.Contracts;
 using Service;
 using WebApplication1.Extensions;
+using Contracts.Interface;
+using CodeMazeProject1.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,9 +25,20 @@ builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+builder.Services.AddControllers(config => { config.RespectBrowserAcceptHeader = true; }).AddXmlDataContractSerializerFormatters()
+    .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
+
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 var app = builder.Build();
+
+var logger = app.Services.GetRequiredService<ILoggerManager>();
+app.ConfigureExceptionHandler(logger);
+if(app.Environment.IsProduction())
+{
+    app.UseHsts();
+}
 
 if (app.Environment.IsDevelopment())
 {
