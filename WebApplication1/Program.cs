@@ -1,6 +1,8 @@
 using CodeMazeProject1;
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
+using Service.Contracts;
+using Service;
 using WebApplication1.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,11 @@ builder.Services.ConfigureCors();
 builder.Services.ConfigureIISIntegration();
 builder.Services.ConfigureRepositoryManager();
 builder.Services.ConfigureServiceManager();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped<IServiceManager, ServiceManager>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
+
+
 builder.Services.ConfigureSqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers()
