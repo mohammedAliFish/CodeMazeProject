@@ -22,7 +22,7 @@ namespace CompanyEmployees.Presentation.Controllers
         
         }
 
-        [HttpGet("{id:guid}")]
+        [HttpGet("{id:guid}" , Name="CompanyById")]
         public IActionResult GetCompany(Guid id)
         {
             var company = _service.CompanyService.GetCompany(id, trackChanges: false);

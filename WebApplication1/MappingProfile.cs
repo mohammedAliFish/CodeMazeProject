@@ -14,6 +14,8 @@ namespace CodeMazeProject1
             
             CreateMap<Employee, EmployeeDto>();
 
+            CreateMap<CompanyForCreationDto, Company>();
+
         }
     }
 }
