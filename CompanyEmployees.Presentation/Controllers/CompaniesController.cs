@@ -28,6 +28,13 @@ namespace CompanyEmployees.Presentation.Controllers
             var company = _service.CompanyService.GetCompany(id, trackChanges: false);
             return Ok(company);
         }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteCompany(Guid id)
+        {
+            _service.CompanyService.DeleteCompany(id, trackChanges: false);
+            return NoContent();
+        }
+
 
     }
 }
