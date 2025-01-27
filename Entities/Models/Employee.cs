@@ -23,7 +23,7 @@ namespace Entities.Models
 
         [ForeignKey(nameof(Company))]
         public Guid CompanyGuid { get; set; }
-        public Company Company { get; set; }
+        public Company? Company { get; set; }
 
 
     }

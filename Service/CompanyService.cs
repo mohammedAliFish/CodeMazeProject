@@ -14,7 +14,7 @@ namespace Service
         private readonly IRepositoryManager _repository;
         private readonly ILoggerManager _logger;
         private readonly IMapper _mapper;
-        public CompanyService(IRepositoryManager repository, ILoggerManager logger , IMapper mapper)
+        public CompanyService(IRepositoryManager repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -24,15 +24,15 @@ namespace Service
 
         public IEnumerable<CompanyDto> GetAllCompanies(bool trackChanges)
         {
-           
-                var companies = _repository.Company.GetAllCompanies(trackChanges);
 
-               
-                var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
+            var companies = _repository.Company.GetAllCompanies(trackChanges);
 
 
-                return companiesDto;
-         
+            var companiesDto = _mapper.Map<IEnumerable<CompanyDto>>(companies);
+
+
+            return companiesDto;
+
         }
         public CompanyDto GetCompany(Guid companyId, bool trackChanges)
         {
@@ -45,7 +45,7 @@ namespace Service
 
         public CompanyDto CreateCompany(CompanyForCreationDto company)
         {
-           
+
 
             var companyEntity = _mapper.Map<Company>(company);
             _repository.Company.CreateCompany(companyEntity);
@@ -64,6 +64,16 @@ namespace Service
             }
 
             _repository.Company.DeleteCompany(company);
+            _repository.Save();
+        }
+
+        public void UpdateCompany(Guid companyId, CompanyForUpdateDto companyForUpdate, bool trackChanges)
+        {
+            var companyEntity = _repository.Company.GetCompany(companyId, trackChanges);
+            if (companyEntity == null)
+                throw new CompanyNotFoundException(companyId);
+            
+            _mapper.Map(companyForUpdate, companyEntity);
             _repository.Save();
         }
     }
