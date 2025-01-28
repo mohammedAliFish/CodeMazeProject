@@ -8,8 +8,8 @@ namespace CodeMazeProject1
     {
         public MappingProfile()
         {
-            CreateMap<Company, CompanyDto>()
-                .ForCtorParam("FullAddress", opt => opt.MapFrom(x => string.Join(" ", x.CompanyAddress, x.Country)));
+            CreateMap<Company, CompanyDto>();
+                
 
             
             CreateMap<Employee, EmployeeDto>();
