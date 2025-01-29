@@ -22,7 +22,8 @@ namespace Repository
             employee.CompanyGuid = companyGuid;
             Create(employee);
         }
-
+        public IEnumerable<Employee> GetAllEmployees(bool trackChanges) =>
+           FindAll(trackChanges).OrderBy(e => e.EmployeeName).ToList();
         public void DeleteEmployee(Employee employee) => Delete(employee);
     }
     

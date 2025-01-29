@@ -24,30 +24,12 @@ namespace CompanyEmployees.Presentation.Controllers
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
         [HttpPost]
         public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
         {
             var createdCompany = _service.CompanyService.CreateCompany(company);
             return CreatedAtRoute("CompanyById", new { id = createdCompany.CompanyGuid }, createdCompany);
         }
-
-
-
-
-
-
         [HttpPut("{id:guid}")]
         public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
         {

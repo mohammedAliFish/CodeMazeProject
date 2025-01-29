@@ -21,12 +21,27 @@ namespace CompanyEmployees.Presentation.Controllers
             return Ok(employees);
         }
 
-        [HttpGet("{id:guid}"  , Name = "GetEmployeeForCompany")]
-        public IActionResult GetEmployeeForCompany(Guid companyId, Guid id)
+        //[HttpGet("{id:guid}"  , Name = "GetEmployeeForCompany")]
+        //public IActionResult GetEmployeeForCompany(Guid companyId, Guid id)
+        //{
+        //    var employee = _service.EmployeeService.GetEmployee(companyId, id, trackChanges: false);
+        //    return Ok(employee);
+        //}
+        [HttpGet("all-employees-with-companies")]
+        public IActionResult GetAllEmployeesWithCompanyNames()
         {
-            var employee = _service.EmployeeService.GetEmployee(companyId, id, trackChanges: false);
-            return Ok(employee);
+            var employeesWithCompanyNames = _service.EmployeeService.GetAllEmployeesWithCompanyNames(trackChanges: false);
+
+            if (employeesWithCompanyNames == null || !employeesWithCompanyNames.Any())
+            {
+                return NotFound("No employees found.");
+            }
+
+            return Ok(employeesWithCompanyNames);
         }
+
+       
+
 
 
         [HttpDelete("{id:guid}")]

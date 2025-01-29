@@ -9,7 +9,7 @@ namespace Contracts.Interface
         Employee GetEmployee(Guid companyId, Guid id, bool trackChanges);
         void CreateEmployeeForCompany(Guid companyId, Employee employee);
 
-
+        IEnumerable<Employee> GetAllEmployees(bool trackChanges);
         void DeleteEmployee(Employee employee);
     }
 }

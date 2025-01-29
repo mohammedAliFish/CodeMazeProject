@@ -31,7 +31,7 @@ namespace Service
             var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
             return employeesDto;
         }
-
+        
         public EmployeeDto GetEmployee(Guid companyId, Guid id, bool trackChanges)
         {
             
@@ -43,6 +43,11 @@ namespace Service
 
            
             return _mapper.Map<EmployeeDto>(employeeDb);
+        }
+        public IEnumerable<Employee> GetAllEmployees(bool trackChanges)
+        {
+           
+            return _repository.Employee.GetAllEmployees(trackChanges);
         }
 
         private void ValidateCompanyExists(Guid companyId, bool trackChanges)
@@ -79,6 +84,27 @@ namespace Service
 
             _repository.Employee.DeleteEmployee(employeeForCompany);
             _repository.Save();
+        }
+        public IEnumerable<EmployeeWithCompanyDto> GetAllEmployeesWithCompanyNames(bool trackChanges)
+        {
+            
+            var employeesFromDb = _repository.Employee.GetAllEmployees(trackChanges);
+
+            
+            var employeesWithCompanyDto = employeesFromDb.Select(e =>
+            {
+                var company = _repository.Company.GetCompany(e.CompanyGuid, trackChanges);
+                return new EmployeeWithCompanyDto
+                {
+                    EmployeeGuid = e.EmployeeGuid,
+                    EmployeeName = e.EmployeeName,
+                    EmployeeAge = e.EmployeeAge,
+                    EmployeePosition = e.EmployeePosition,
+                    CompanyName = company?.CompanyName ?? "Company Not Found"
+                };
+            });
+
+            return employeesWithCompanyDto;
         }
 
         public void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate, bool compTrackChanges, bool empTrackChanges) 
