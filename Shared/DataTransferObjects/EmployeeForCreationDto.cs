@@ -1,6 +1,9 @@
 ﻿
 namespace Shared.DataTransferObjects
 {
-    public record EmployeeForCreationDto(string EmployeeName, int EmployeeAge, string EmployeePosition);
+    public record EmployeeForCreationDto(
 
+        string EmployeeName
+        , int EmployeeAge
+        , string EmployeePosition);
 }

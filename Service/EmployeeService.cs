@@ -6,6 +6,7 @@ using Entities.Models;
 using Repository;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 namespace Service
 {
     internal sealed class EmployeeService : IEmployeeService
@@ -20,18 +21,41 @@ namespace Service
             _mapper = mapper;
         }
 
-        public IEnumerable<EmployeeDto> GetEmployees(Guid companyId, bool trackChanges)
+        public async Task<(IEnumerable<EmployeeDto> employees, MetaData metaData)> GetEmployeesAsync
+          (Guid companyId, EmployeeParameters employeeParameters, bool trackChanges)
         {
-            var company = _repository.Company.GetCompany(companyId, trackChanges);
+            await CheckIfCompanyExists(companyId, trackChanges);
 
-            if (company is null)
-                throw new CompanyNotFoundException(companyId);
+            var employeesWithMetaData = await _repository.Employee
+                .GetEmployeesAsync(companyId, employeeParameters, trackChanges);
+            var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesWithMetaData);
 
-            var employeesFromDb = _repository.Employee.GetEmployees(companyId, trackChanges);
-            var employeesDto = _mapper.Map<IEnumerable<EmployeeDto>>(employeesFromDb);
-            return employeesDto;
+            return (employees: employeesDto, metaData: employeesWithMetaData.MetaData);
         }
-        
+        public async Task<EmployeeDto> GetEmployeeAsync(Guid companyId, Guid id, bool trackChanges)
+        {
+            await CheckIfCompanyExists(companyId, trackChanges);
+
+            var employeeDb = await GetEmployeeForCompanyAndCheckIfItExists(companyId, id, trackChanges);
+
+            var employee = _mapper.Map<EmployeeDto>(employeeDb);
+            return employee;
+        }
+        private async Task<Employee> GetEmployeeForCompanyAndCheckIfItExists
+        (Guid companyId, Guid id, bool trackChanges)
+        {
+            var employeeDb = await _repository.Employee.GetEmployeeAsync(companyId, id, trackChanges);
+            if (employeeDb is null)
+                throw new EmployeeNotFoundException(id);
+
+            return employeeDb;
+        }
+        private async Task CheckIfCompanyExists(Guid companyId, bool trackChanges)
+	{
+		var company = await _repository.Company.GetCompanyAsync(companyId, trackChanges);
+		if (company is null)
+			throw new CompanyNotFoundException(companyId);
+	}
         public EmployeeDto GetEmployee(Guid companyId, Guid id, bool trackChanges)
         {
             
@@ -52,21 +76,21 @@ namespace Service
 
         private void ValidateCompanyExists(Guid companyId, bool trackChanges)
         {
-            var companyExists = _repository.Company.GetCompany(companyId, trackChanges) != null;
+            var companyExists = _repository.Company.GetCompanyAsync(companyId, trackChanges) != null;
             if (!companyExists)
                 throw new CompanyNotFoundException(companyId);
         }
 
         public EmployeeDto CreateEmployeeForCompany(Guid companyId, EmployeeForCreationDto employeeForCreation, bool trackChanges)
         {
-            var company = _repository.Company.GetCompany(companyId, trackChanges);
+            var company = _repository.Company.GetCompanyAsync(companyId, trackChanges);
             if (company is null)
                 throw new CompanyNotFoundException(companyId);
 
             var employeeEntity = _mapper.Map<Employee>(employeeForCreation);
           
             _repository.Employee.CreateEmployeeForCompany(companyId, employeeEntity);
-            _repository.Save();
+            _repository.SaveAsync();
 
             var employeeToReturn = _mapper.Map<EmployeeDto>(employeeEntity);
 
@@ -74,7 +98,7 @@ namespace Service
         }
         public void DeleteEmployeeForCompany(Guid companyId, Guid id, bool trackChanges)
         {
-            var company = _repository.Company.GetCompany(companyId, trackChanges);
+            var company = _repository.Company.GetCompanyAsync(companyId, trackChanges);
             if (company is null)
                 throw new CompanyNotFoundException(companyId);
 
@@ -83,7 +107,7 @@ namespace Service
                 throw new EmployeeNotFoundException(id);
 
             _repository.Employee.DeleteEmployee(employeeForCompany);
-            _repository.Save();
+            _repository.SaveAsync();
         }
         public IEnumerable<EmployeeWithCompanyDto> GetAllEmployeesWithCompanyNames(bool trackChanges)
         {
@@ -93,14 +117,14 @@ namespace Service
             
             var employeesWithCompanyDto = employeesFromDb.Select(e =>
             {
-                var company = _repository.Company.GetCompany(e.CompanyGuid, trackChanges);
+                var company = _repository.Company.GetCompanyAsync(e.CompanyGuid, trackChanges);
                 return new EmployeeWithCompanyDto
                 {
                     EmployeeGuid = e.EmployeeGuid,
                     EmployeeName = e.EmployeeName,
                     EmployeeAge = e.EmployeeAge,
                     EmployeePosition = e.EmployeePosition,
-                    CompanyName = company?.CompanyName ?? "Company Not Found"
+                   // CompanyName = company?. ?? "Company Not Found"
                 };
             });
 
@@ -109,11 +133,11 @@ namespace Service
 
         public void UpdateEmployeeForCompany(Guid companyId, Guid id, EmployeeForUpdateDto employeeForUpdate, bool compTrackChanges, bool empTrackChanges) 
         { 
-            var company = _repository.Company.GetCompany(companyId, compTrackChanges);
+            var company = _repository.Company.GetCompanyAsync(companyId, compTrackChanges);
             if (company is null) throw new CompanyNotFoundException(companyId); 
             var employeeEntity = _repository.Employee.GetEmployee(companyId, id, empTrackChanges);
             if (employeeEntity is null) throw new EmployeeNotFoundException(id); 
-            _mapper.Map(employeeForUpdate, employeeEntity); _repository.Save(); 
+            _mapper.Map(employeeForUpdate, employeeEntity); _repository.SaveAsync(); 
         }
 
     }

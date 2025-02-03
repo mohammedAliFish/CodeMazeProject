@@ -1,8 +1,12 @@
 ﻿
 
+
+using System.Text.Json;
+using CompanyEmployees.Presentation.ModelBinders;
 using Microsoft.AspNetCore.Mvc;
 using Service.Contracts;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace CompanyEmployees.Presentation.Controllers
 {
@@ -15,49 +19,62 @@ namespace CompanyEmployees.Presentation.Controllers
         public CompaniesController(IServiceManager service) => _service = service;
 
         [HttpGet]
-        public IActionResult GetCompanies()
+        public async Task<IActionResult> GetCompanies([FromQuery] CompanyParameters companyParameters)
         {
-            
-            var companies = _service.CompanyService.GetAllCompanies(trackChanges: false);
-                return Ok(companies);
-        
+            var pagedResult = await _service.CompanyService.GetAllCompaniesAsync(companyParameters, trackChanges: false);
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagedResult.MetaData));
+
+            return Ok(pagedResult);
         }
+
+        //public IActionResult GetCompanies()
+        //{
+
+        //    var companies = _service.CompanyService.GetAllCompanies(trackChanges: false);
+        //        return Ok(companies);
+
+        //}
 
 
         [HttpPost]
-        public IActionResult CreateCompany([FromBody] CompanyForCreationDto company)
+        
+public async Task<IActionResult> CreateCompany([FromBody] CompanyForCreationDto company)
         {
-            var createdCompany = _service.CompanyService.CreateCompany(company);
+            var createdCompany = await _service.CompanyService.CreateCompanyAsync(company);
             return CreatedAtRoute("CompanyById", new { id = createdCompany.CompanyGuid }, createdCompany);
         }
+
+
+
+
         [HttpPut("{id:guid}")]
-        public IActionResult UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
+        public async Task<IActionResult> UpdateCompany(Guid id, [FromBody] CompanyForUpdateDto company)
         {
             if (company == null) {
 
                 return BadRequest("CompanyForUpdateDto object is null");
             }
-            _service.CompanyService.UpdateCompany(id, company, trackChanges: true);
+            await _service.CompanyService.UpdateCompanyAsync(id, company, trackChanges: true);
             return NoContent();
         }
 
 
-
+        [HttpGet("collection/({ids})", Name = "CompanyCollection")]
+        public async Task<IActionResult> GetCompanyCollection([ModelBinder(BinderType = typeof(ArrayModelBinder))] IEnumerable<Guid> ids)
+        { var companies = await _service.CompanyService.GetByIdsAsync(ids, trackChanges: false); return Ok(companies); }
 
 
 
         [HttpGet("{id:guid}" , Name="CompanyById")]
-        public IActionResult GetCompany(Guid id)
+        public async Task<IActionResult> GetCompany(Guid id)
         {
-            var company = _service.CompanyService.GetCompany(id, trackChanges: false);
+            var company = await _service.CompanyService.GetCompanyAsync(id, trackChanges: false);
             return Ok(company);
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteCompany(Guid id)
-        {
-            _service.CompanyService.DeleteCompany(id, trackChanges: false);
-            return NoContent();
-        }
+        public async Task<IActionResult> DeleteCompany(Guid id) 
+        { await _service.CompanyService.DeleteCompanyAsync(id, trackChanges: false); return NoContent(); }
 
 
     }
