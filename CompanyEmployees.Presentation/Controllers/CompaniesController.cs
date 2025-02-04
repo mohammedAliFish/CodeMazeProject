@@ -28,13 +28,7 @@ namespace CompanyEmployees.Presentation.Controllers
             return Ok(pagedResult);
         }
 
-        //public IActionResult GetCompanies()
-        //{
-
-        //    var companies = _service.CompanyService.GetAllCompanies(trackChanges: false);
-        //        return Ok(companies);
-
-        //}
+      
 
 
         [HttpPost]
