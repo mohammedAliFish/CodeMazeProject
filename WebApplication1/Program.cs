@@ -6,6 +6,9 @@ using Service;
 using WebApplication1.Extensions;
 using Contracts.Interface;
 using CodeMazeProject1.Extensions;
+using Service.DataShaping;
+using Shared.DataTransferObjects;
+using CompanyEmployees.Utility;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +34,8 @@ builder.Services.AddControllers(config => { config.RespectBrowserAcceptHeader = 
 
 builder.Services.AddControllers()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
+builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
+builder.Services.AddScoped<IEmployyLinks , EmployeeLinks>();
 var app = builder.Build();
 
 var logger = app.Services.GetRequiredService<ILoggerManager>();
