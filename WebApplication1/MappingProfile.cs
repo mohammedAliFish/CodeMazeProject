@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Entities.Models;
 using Shared.DataTransferObjects;
+using Shared.RequestFeatures;
 
 namespace CodeMazeProject1
 {
@@ -21,7 +22,8 @@ namespace CodeMazeProject1
             CreateMap<EmployeeForCreationDto, Employee>();
 
             CreateMap<CompanyForUpdateDto, Company>();
-              
+            CreateMap<UserForRegistrationDto, User>();
+
 
         }
     }

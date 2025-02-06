@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Repository;
 
@@ -11,9 +12,11 @@ using Repository;
 namespace CodeMazeProject1.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20250206121513_addRolsToDb")]
+    partial class addRolsToDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -219,13 +222,13 @@ namespace CodeMazeProject1.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1f03d8e4-432c-4e72-a1a6-ff1c678b9b72",
+                            Id = "70396b6d-4b44-413c-a08d-65c34f8687c2",
                             Name = "Manager",
                             NormalizedName = "MANAGER"
                         },
                         new
                         {
-                            Id = "2a5b0f91-67a7-44a1-b94f-89d2c12e3c65",
+                            Id = "dff3f481-c44f-4a5c-a880-d166458f5783",
                             Name = "Administrator",
                             NormalizedName = "ADMINISTRATOR"
                         });

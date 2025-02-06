@@ -36,6 +36,8 @@ builder.Services.AddControllers()
     .AddApplicationPart(typeof(CompanyEmployees.Presentation.AssemblyReference).Assembly);
 builder.Services.AddScoped<IDataShaper<EmployeeDto>, DataShaper<EmployeeDto>>();
 builder.Services.AddScoped<IEmployyLinks , EmployeeLinks>();
+builder.Services.AddAuthentication();
+builder.Services.ConfigureIdentity();
 var app = builder.Build();
 
 var logger = app.Services.GetRequiredService<ILoggerManager>();
@@ -63,5 +65,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 app.UseCors("CorsPolicy");
 app.UseAuthorization();
+app.UseAuthentication();
 app.MapControllers();
 app.Run();
