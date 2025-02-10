@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 
-namespace Shared.RequestFeatures
+namespace Shared.DataTransferObjects
 {
     public class UserForRegistrationDto
     {
